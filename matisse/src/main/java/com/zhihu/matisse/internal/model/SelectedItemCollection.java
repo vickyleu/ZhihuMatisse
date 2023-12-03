@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.IncapableCause;
@@ -79,6 +80,16 @@ public class SelectedItemCollection {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(STATE_SELECTION, new ArrayList<>(mItems));
         outState.putInt(STATE_COLLECTION_TYPE, mCollectionType);
+    }
+    public void onRestoreInstanceState(Bundle outState) {
+        ArrayList<Parcelable> list = outState.getParcelableArrayList(STATE_SELECTION);
+        mItems.clear();
+        for (Parcelable item:list) {
+            if(item instanceof Item) {
+                mItems.add((Item) item);
+            }
+        }
+        mCollectionType = outState.getInt(STATE_COLLECTION_TYPE);
     }
 
     public Bundle getDataWithBundle() {
@@ -172,8 +183,10 @@ public class SelectedItemCollection {
             String cause;
 
             try {
+                // 获取资源 ID
+                int resourceId = mContext.getResources().getIdentifier("error_over_count", "plurals", mContext.getPackageName());
                 cause = mContext.getResources().getQuantityString(
-                        R.plurals.error_over_count,
+                        resourceId,//R.plurals.error_over_count,
                         maxSelectable,
                         maxSelectable
                 );

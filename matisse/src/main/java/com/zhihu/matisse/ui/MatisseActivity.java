@@ -26,18 +26,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Album;
@@ -57,8 +58,8 @@ import com.zhihu.matisse.internal.ui.widget.IncapableDialog;
 import com.zhihu.matisse.internal.utils.MediaStoreCompat;
 import com.zhihu.matisse.internal.utils.PathUtils;
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
-
 import com.zhihu.matisse.internal.utils.SingleMediaScanner;
+
 import java.util.ArrayList;
 
 /**
@@ -79,7 +80,7 @@ public class MatisseActivity extends AppCompatActivity implements
     public static final String CHECK_STATE = "checkState";
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private MediaStoreCompat mMediaStoreCompat;
-    private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
+    private final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     private SelectionSpec mSpec;
 
     private AlbumsSpinner mAlbumsSpinner;
@@ -164,6 +165,27 @@ public class MatisseActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mSelectedCollection.onRestoreInstanceState(savedInstanceState);
+        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
+        mOriginalEnable = savedInstanceState.getBoolean("checkState", false);
+    }
+
+    /*override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+
+        mPresenter.cid = (savedInstanceState.getString("cid") ?: "0").toInt()
+        mPresenter.tid = (savedInstanceState.getString("tid") ?: "0").toInt()
+        mPresenter.course_review_mode = savedInstanceState.getString("cReview")?.toBoolean() ?: false
+        mPresenter.course_view_mode = savedInstanceState.getString("cView")?.toBoolean() ?: false
+        savedInstanceState.getSerializable("currentImageItem")?.let {
+            currentImageItem = it
+        }
+        super.onRestoreInstanceState(savedInstanceState)
+    }*/
+
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mAlbumCollection.onDestroy();
@@ -239,7 +261,8 @@ public class MatisseActivity extends AppCompatActivity implements
                         Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             new SingleMediaScanner(this.getApplicationContext(), path, new SingleMediaScanner.ScanListener() {
-                @Override public void onScanFinish() {
+                @Override
+                public void onScanFinish() {
                     Log.i("SingleMediaScanner", "scan finish!");
                 }
             });
@@ -365,19 +388,15 @@ public class MatisseActivity extends AppCompatActivity implements
         mAlbumsAdapter.swapCursor(cursor);
         // select default album.
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
-                mAlbumsSpinner.setSelection(MatisseActivity.this,
-                        mAlbumCollection.getCurrentSelection());
-                Album album = Album.valueOf(cursor);
-                if (album.isAll() && SelectionSpec.getInstance().capture) {
-                    album.addCaptureCount();
-                }
-                onAlbumSelected(album);
+        handler.post(() -> {
+            cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
+            mAlbumsSpinner.setSelection(MatisseActivity.this,
+                    mAlbumCollection.getCurrentSelection());
+            Album album = Album.valueOf(cursor);
+            if (album.isAll() && SelectionSpec.getInstance().capture) {
+                album.addCaptureCount();
             }
+            onAlbumSelected(album);
         });
     }
 

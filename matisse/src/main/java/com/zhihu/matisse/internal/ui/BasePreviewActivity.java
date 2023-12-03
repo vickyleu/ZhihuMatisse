@@ -15,19 +15,19 @@
  */
 package com.zhihu.matisse.internal.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.viewpager.widget.ViewPager;
 
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.IncapableCause;
@@ -347,7 +347,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(EXTRA_RESULT_APPLY, apply);
         intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        setResult(Activity.RESULT_OK, intent);
+        setResult(AppCompatActivity.RESULT_OK, intent);
     }
 
     private boolean assertAddSelection(Item item) {

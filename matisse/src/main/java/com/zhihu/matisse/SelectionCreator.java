@@ -16,29 +16,6 @@
  */
 package com.zhihu.matisse;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.annotation.StyleRes;
-import androidx.fragment.app.Fragment;
-
-import com.zhihu.matisse.engine.ImageEngine;
-import com.zhihu.matisse.filter.Filter;
-import com.zhihu.matisse.internal.entity.CaptureStrategy;
-import com.zhihu.matisse.internal.entity.SelectionSpec;
-import com.zhihu.matisse.listener.OnCheckedListener;
-import com.zhihu.matisse.listener.OnSelectedListener;
-import com.zhihu.matisse.ui.MatisseActivity;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.Set;
-
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_BEHIND;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_FULL_USER;
@@ -55,6 +32,32 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Build;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StyleRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
+import com.zhihu.matisse.engine.ImageEngine;
+import com.zhihu.matisse.filter.Filter;
+import com.zhihu.matisse.internal.entity.CaptureStrategy;
+import com.zhihu.matisse.internal.entity.SelectionSpec;
+import com.zhihu.matisse.listener.OnCheckedListener;
+import com.zhihu.matisse.listener.OnSelectedListener;
+import com.zhihu.matisse.ui.MatisseActivity;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Fluent API for building media select specification.
@@ -253,7 +256,7 @@ public final class SelectionCreator {
      * @param orientation An orientation constant as used in {@link ScreenOrientation}.
      *                    Default value is {@link android.content.pm.ActivityInfo#SCREEN_ORIENTATION_PORTRAIT}.
      * @return {@link SelectionCreator} for fluent API.
-     * @see Activity#setRequestedOrientation(int)
+     * @see AppCompatActivity#setRequestedOrientation(int)
      */
     public SelectionCreator restrictOrientation(@ScreenOrientation int orientation) {
         mSelectionSpec.orientation = orientation;
@@ -306,7 +309,6 @@ public final class SelectionCreator {
      * <p>
      * There are two built-in image engines:
      * 1. {@link com.zhihu.matisse.engine.impl.GlideEngine}
-     * 2. {@link com.zhihu.matisse.engine.impl.PicassoEngine}
      * And you can implement your own image engine.
      *
      * @param imageEngine {@link ImageEngine}

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2017 Zhihu Inc.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +13,49 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.zhihu.matisse">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!--    文件权限-->
+    <!-- 外部存储的写权限 -->
+    <!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 安卓11额外权限 -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!--    文件权限-->
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application>
-        <activity android:name="com.zhihu.matisse.ui.MatisseActivity"/>
-        <activity android:name="com.zhihu.matisse.internal.ui.AlbumPreviewActivity"/>
-        <activity android:name="com.zhihu.matisse.internal.ui.SelectedPreviewActivity"/>
+        <activity
+            android:name="com.zhihu.matisse.ui.MatisseActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:multiprocess="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.zhihu.matisse.ui.CameraActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:multiprocess="true"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.zhihu.matisse.internal.ui.AlbumPreviewActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:multiprocess="true"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.zhihu.matisse.internal.ui.SelectedPreviewActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:multiprocess="true"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 </manifest>

@@ -16,7 +16,7 @@
  */
 package com.zhihu.matisse.internal.utils;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -28,12 +28,14 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import androidx.fragment.app.FragmentActivity;
+
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.filter.Filter;
+import com.zhihu.matisse.internal.entity.IncapableCause;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
-import com.zhihu.matisse.internal.entity.IncapableCause;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,7 +58,7 @@ public final class PhotoMetadataUtils {
         return size.x * size.y;
     }
 
-    public static Point getBitmapSize(Uri uri, Activity activity) {
+    public static Point getBitmapSize(Uri uri, FragmentActivity activity) {
         ContentResolver resolver = activity.getContentResolver();
         Point imageSize = getBitmapBound(resolver, uri);
         int w = imageSize.x;
@@ -101,6 +103,7 @@ public final class PhotoMetadataUtils {
         }
     }
 
+    @SuppressLint("Range")
     public static String getPath(ContentResolver resolver, Uri uri) {
         if (uri == null) {
             return null;

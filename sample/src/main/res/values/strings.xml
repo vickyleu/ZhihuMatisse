@@ -14,8 +14,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<resources>
-    <string name="app_name">Matisse</string>
-    <string name="permission_request_denied">Permission request denied</string>
-    <string name="error_gif">x or y bound size should be at least %1$dpx and file size should be no more than %2$sM</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:ignore="MissingTranslation">Matisse</string>
+    <string name="permission_request_denied" tools:ignore="MissingTranslation">Permission request denied</string>
+    <string name="error_gif" tools:ignore="MissingTranslation">x or y bound size should be at least %1$dpx and file size should be no more than %2$sM</string>
 </resources>
