@@ -20,6 +20,8 @@ plugins{
     id("maven-publish")
 }
 
+group = "com.github.vickyleu"
+version = "1.0.0"
 
 android {
     compileSdk = 34
@@ -56,18 +58,4 @@ dependencies {
     implementation("it.sephiroth.android.library.imagezoom:imagezoom:2.3.0")
     implementation("io.fotoapparat:fotoapparat:2.7.0")
     compileOnly("com.github.bumptech.glide:glide:4.16.0")
-}
-
-
-afterEvaluate{
-    publishing{
-        publications {
-            create<MavenPublication>("release") {
-                groupId = "com.zhihu.matisse"
-                artifactId = "matisse"
-                version = "1.0.0"
-                from(components["release"])
-            }
-        }
-    }
 }
