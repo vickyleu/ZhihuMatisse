@@ -16,8 +16,8 @@
 
 plugins{
     id("com.android.library")
-    id("checkstyle")
     kotlin("android")
+    id("maven-publish")
 }
 
 
@@ -58,30 +58,16 @@ dependencies {
     compileOnly("com.github.bumptech.glide:glide:4.16.0")
 }
 
-//tasks.withType(JavaCompile) {
-//    options.encoding = "UTF-8"
-//}
 
-
-//task javadoc(type: Javadoc) {
-//    options.encoding = "utf-8"
-//}
-//
-//checkstyle {
-//    toolVersion = '7.6.1'
-//}
-//
-//tasks.withType(Javadoc) {
-//    options.addStringOption('Xdoclint:none', '-quiet')
-//    options.addStringOption('encoding', 'UTF-8')
-//}
-//
-//task checkstyle(type:Checkstyle) {
-//    description 'Runs Checkstyle inspection against matisse sourcesets.'
-//    group = 'Code Quality'
-//    configFile rootProject.file('checkstyle.xml')
-//    ignoreFailures = false
-//    showViolations true
-//    classpath = files()
-//    source 'src/main/java'
-//}
+afterEvaluate{
+    publishing{
+        publications {
+            create<MavenPublication>("release") {
+                groupId = "com.zhihu.matisse"
+                artifactId = "matisse"
+                version = "1.0.0"
+                from(components["release"])
+            }
+        }
+    }
+}

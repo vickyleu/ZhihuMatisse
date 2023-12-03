@@ -45,5 +45,5 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.github.tbruyelle:rxpermissions:0.12")
     implementation("io.reactivex.rxjava3:rxjava:3.1.5")
-    implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }
