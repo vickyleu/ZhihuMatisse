@@ -15,21 +15,27 @@
  */
 package com.zhihu.matisse.internal.utils;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.os.EnvironmentCompat;
 import androidx.fragment.app.Fragment;
 
+import com.dylanc.activityresult.launcher.AppDetailsSettingsLauncher;
+import com.dylanc.activityresult.launcher.RequestPermissionLauncher;
+import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 import com.zhihu.matisse.ui.CameraActivity;
 
@@ -38,7 +44,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class MediaStoreCompat {
@@ -74,64 +79,65 @@ public class MediaStoreCompat {
         mCaptureStrategy = strategy;
     }
 
-    public void dispatchCaptureIntent(Context context, int requestCode) {
-        if (false) {
-            Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (captureIntent.resolveActivity(context.getPackageManager()) != null) {
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
+    public void dispatchCaptureIntent(Context context, RequestPermissionLauncher permissionLauncher,
+                                      AppDetailsSettingsLauncher appDetailsSettingsLauncher, int requestCode) {
+        int granted=  ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
+        if(granted != PackageManager.PERMISSION_GRANTED){
+            //显示一个dialog,提示用户需要相机权限,需要打开设置页面去开启权限,一个是取消,一个是去设置
+            permissionLauncher.launch(Manifest.permission.CAMERA, ActivityOptionsCompat.makeBasic(), grantedState -> {
+                if(!grantedState){
+                    // 相机权限已经被禁用了,需要跳转到系统设置页面,去手动开启 appDetailsSettingsLauncher
+                    AlertDialogUtils.showDialog(context, "需要相机权限", "取消", "去设置", (dialog, which) -> {
+                        dialog.dismiss();
+                    }, (dialog, which) -> {
+                        dialog.dismiss();
+                        openSettings(context, appDetailsSettingsLauncher, requestCode);
+                    });
+                }else{
+                    openCamera(context, requestCode);
                 }
+            });
+            return;
+        }
+        openCamera(context, requestCode);
+    }
 
-                if (photoFile != null) {
-                    mCurrentPhotoPath = photoFile.getAbsolutePath();
-                    mCurrentPhotoUri = FileProvider.getUriForFile(mContext.get(),
-                            mCaptureStrategy.authority, photoFile);
-                    captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoPath);
-                    captureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                        List<ResolveInfo> resInfoList = context.getPackageManager()
-                                .queryIntentActivities(captureIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                        for (ResolveInfo resolveInfo : resInfoList) {
-                            String packageName = resolveInfo.activityInfo.packageName;
-                            context.grantUriPermission(packageName, mCurrentPhotoUri,
-                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        }
-                    }*/
-                    if (mFragment != null) {
-                        mFragment.get().startActivityForResult(captureIntent, requestCode);
-                    } else {
-                        mContext.get().startActivityForResult(captureIntent, requestCode);
-                    }
-                }
+    private void openSettings(Context context, AppDetailsSettingsLauncher appDetailsSettingsLauncher, int requestCode) {
+        appDetailsSettingsLauncher.launch(o -> {
+            int granted1 = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
+            if(granted1 == PackageManager.PERMISSION_GRANTED) {
+                openCamera(context, requestCode);
+            }else{
+                Toast.makeText(context, "未开启相机权限", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Intent captureIntent = new Intent(context, CameraActivity.class);
-            if (captureIntent.resolveActivity(context.getPackageManager()) != null) {
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (photoFile != null) {
-                    mCurrentPhotoPath = photoFile.getAbsolutePath();
-                    mCurrentPhotoUri = FileProvider.getUriForFile(mContext.get(),
-                            mCaptureStrategy.authority, photoFile);
-                    captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoPath);
+        });
+    }
+
+    private void openCamera(Context context, int requestCode) {
+        Intent captureIntent = new Intent(context, CameraActivity.class);
+        if (captureIntent.resolveActivity(context.getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (photoFile != null) {
+                mCurrentPhotoPath = photoFile.getAbsolutePath();
+                mCurrentPhotoUri = FileProvider.getUriForFile(mContext.get(),
+                        mCaptureStrategy.authority, photoFile);
+                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoPath);
 //                    captureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-                    if (mFragment != null) {
-                        mFragment.get().startActivityForResult(captureIntent, requestCode);
-                    } else {
-                        mContext.get().startActivityForResult(captureIntent, requestCode);
-                    }
+                if (mFragment != null) {
+                    mFragment.get().startActivityForResult(captureIntent, requestCode);
+                    mFragment.get().requireActivity().overridePendingTransition(R.anim.translate_in,0);
+                } else {
+                    mContext.get().startActivityForResult(captureIntent, requestCode);
+                    mContext.get().overridePendingTransition(R.anim.translate_in,0);
                 }
             }
         }
-
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -170,5 +176,27 @@ public class MediaStoreCompat {
 
     public String getCurrentPhotoPath() {
         return mCurrentPhotoPath;
+    }
+
+    static class AlertDialogUtils {
+        public static void showDialog(Context context, String title, String negativeText,
+                                      String positiveText, DialogInterface.OnClickListener negativeListener,
+                                      DialogInterface.OnClickListener positiveListener) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.Alert_Zhihu);
+            builder.setTitle(title);
+            builder.setNegativeButton(negativeText, negativeListener);
+            builder.setPositiveButton(positiveText, positiveListener);
+            // 设置 AlertDialog 的宽度和高度
+//            builder.setSize(0.75f * context.getResources().getDisplayMetrics().widthPixels, 150);
+            AlertDialog dialog = builder.create();
+            // 设置dialog的宽高,宽是屏幕宽的0.75,高是150dp
+            dialog.getWindow().setLayout((int) (0.75f * context.getResources().getDisplayMetrics().widthPixels), dp2px(context, 150));
+            dialog.show();
+        }
+
+        private static int dp2px(Context context, int dp) {
+            float density = context.getResources().getDisplayMetrics().density;
+            return (int) (dp * density + 0.5f);
+        }
     }
 }

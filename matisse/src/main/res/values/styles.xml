@@ -55,6 +55,9 @@
         <item name="android:popupBackground">@color/zhihu_album_popup_bg</item>
     </style>
 
+
+    <style name="Alert.Zhihu" parent="Theme.AppCompat.Dialog.Alert"/>
+
     <!--    //===================================== Theme Dracula ==========================================-->
 
     <style name="Matisse.Dracula" parent="Theme.AppCompat.NoActionBar">

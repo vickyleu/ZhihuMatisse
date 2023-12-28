@@ -3,6 +3,7 @@ package com.zhihu.matisse.ui
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatActivity
@@ -67,10 +68,24 @@ class CameraActivity : AppCompatActivity() {
             cameraConfiguration = activeCamera.configuration,
             cameraErrorCallback = { Log.e(LOGGING_TAG, "Camera error: ", it) }
         )
+        setSupportActionBar(binding.toolbar)
+        val actionBar = supportActionBar!!
+        actionBar.title=""
+        actionBar.setDisplayHomeAsUpEnabled(true)
+        actionBar.setDisplayShowHomeEnabled(true)  // Set to true
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp)
+
 
         binding.capture onClick takePicture()
         binding.switchCamera onClick changeCamera()
         binding.torchSwitch onCheckedChanged toggleFlash()
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.wtf("onOptionsItemSelected", "onOptionsItemSelected ${item.itemId}")
+        if (item.itemId == android.R.id.home) {
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun takePicture(): () -> Unit = {

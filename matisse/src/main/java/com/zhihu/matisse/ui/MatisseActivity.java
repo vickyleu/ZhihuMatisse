@@ -40,6 +40,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.dylanc.activityresult.launcher.AppDetailsSettingsLauncher;
+import com.dylanc.activityresult.launcher.RequestPermissionLauncher;
+import com.dylanc.activityresult.launcher.StartActivityLauncher;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Album;
 import com.zhihu.matisse.internal.entity.Item;
@@ -446,10 +449,13 @@ public class MatisseActivity extends AppCompatActivity implements
         return mSelectedCollection;
     }
 
+    private final RequestPermissionLauncher permissionLauncher = new RequestPermissionLauncher(this);
+    private final AppDetailsSettingsLauncher appDetailsSettingsLauncher = new AppDetailsSettingsLauncher(this);
+
     @Override
     public void capture() {
         if (mMediaStoreCompat != null) {
-            mMediaStoreCompat.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE);
+            mMediaStoreCompat.dispatchCaptureIntent(this,permissionLauncher,appDetailsSettingsLauncher, REQUEST_CODE_CAPTURE);
         }
     }
 

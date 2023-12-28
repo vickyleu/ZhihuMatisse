@@ -59,7 +59,9 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.annotation:annotation:1.7.0")
+    implementation("com.github.DylanCaiCoding:ActivityResultLauncher:1.1.2")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
+    implementation("androidx.annotation:annotation:1.7.1")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 //    implementation("it.sephiroth.android.library.imagezoom:library:1.0.4")
     implementation("it.sephiroth.android.library.imagezoom:imagezoom:2.3.0")
